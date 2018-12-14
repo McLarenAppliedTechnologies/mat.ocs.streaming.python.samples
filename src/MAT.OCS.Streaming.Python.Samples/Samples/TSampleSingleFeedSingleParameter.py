@@ -2,11 +2,11 @@ import uuid
 from mat.ocs.streaming import (AasSerializer, AasDeserializer, KafkaAasConsumer,
                                KafkaAasProducer, MessageInput, Key, KeyType,
                                DependencyServer, FormatState)
-from mat.ocs.streaming.models import TData
+from mat.ocs.streaming.models import TSamples
 
 
-class TDataSingleFeedSingleParameter:
-    """Receive a tdata message and publish it on a different topic."""
+class TSampleSingleFeedSingleParameter:
+    """Receive a tsample message and publish it on a different topic."""
 
     def __init__(
             self,
@@ -53,22 +53,23 @@ class TDataSingleFeedSingleParameter:
 
         # Create message dispatcher and link to callback functions
         self.dispatcher = MessageInput()
-        self.dispatcher.tdata.on_new_message(self.process_tdata_message)
+        self.dispatcher.tsamples.on_new_message(self.process_tsample_message)
 
         # Subscribe to the topic.
         self.consumer.subscribe({subscribe_topic_name: self.dispatcher})
 
-    def process_tdata_message(self, tdata):
+    def process_tsample_message(self, tsample):
 
-        # Received Pandas DataFrame is in tdata.dataframe
+        # Received Pandas DataFrames (one for each parameter) are in
+        # tsample.dataframes
         # This is where you can insert your model to use the DataFrame.
         # Then use your model's output to create the tx_value (below).
 
-        tx_value = TData(dataframe=tdata.dataframe)
+        tx_value = TSamples(dataframes=tsample.dataframes)
         tx_value.populate_data_format(server)
-        tx_value.populate_atlas_config(server)
+        # tx_value.populate_atlas_config(server)  # Not supported yet
 
-        tx_key = Key(KeyType.tdata, key_uid)
+        tx_key = Key(KeyType.tsamples, key_uid)
         tx_key, tx_value = producer.serialize(key_value=(tx_key, tx_value))
         tx_key, tx_value = producer.encode(key_dict=(tx_key, tx_value))
 
@@ -90,7 +91,7 @@ if __name__ == '__main__':
     DEPENDENCY_GROUP = 'dev'
     KAFKA_IP = '10.228.4.22:9092'
     SUBSCRIBE_TOPIC_NAME = 'MIST'
-    SEND_TOPIC_NAME = 'sample_topic_1'
+    SEND_TOPIC_NAME = 'jonathan_test_1'
 
     server = DependencyServer(DEPENDENCY_SERVER_URI, DEPENDENCY_GROUP)
 
@@ -109,7 +110,7 @@ if __name__ == '__main__':
     # Container to store Atlas configuration and data format hash values
     formats = FormatState()
 
-    demo = TDataSingleFeedSingleParameter(consumer, producer, key_uid, formats,
-                                          SUBSCRIBE_TOPIC_NAME, SEND_TOPIC_NAME)
+    demo = TSampleSingleFeedSingleParameter(consumer, producer, key_uid, formats,
+                                            SUBSCRIBE_TOPIC_NAME, SEND_TOPIC_NAME)
 
     demo.run()
