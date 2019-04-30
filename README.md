@@ -5,7 +5,7 @@ Table of Contents
 <!--ts-->
 * [Introduction - MAT.OCS.Streaming library](/README.md)
 * [Python Samples](/README.md)
-* [Model sample](/src/Models/models.md)
+* [Model sample](/src/Models/README.md)
 
 <!--te-->
 
