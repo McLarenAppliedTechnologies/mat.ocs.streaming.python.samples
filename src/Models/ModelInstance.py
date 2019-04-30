@@ -35,7 +35,7 @@ class ModelInstance:
         output.session_output.add_session_dependency(DependencyTypes.data_format, self._output_data_format_id)
         output.session_output.add_session_dependency(DependencyTypes.atlas_configuration, self._output_atlas_conf_id)
 
-        telemetry_input.data_input.bind_default_feed("").data_buffered += self._on_tdata_recieved
+        telemetry_input.data_input.bind_default_feed("").data_buffered += self.gTotal_model
         telemetry_input.laps_input.lap_completed += lambda s, e: output.laps_output.send(e.lap)
         telemetry_input.stream_finished += lambda x, y: pprint("Stream " + stream_id + " ended.")
 
@@ -47,7 +47,7 @@ class ModelInstance:
 
         return telemetry_input
 
-    def _on_tdata_recieved(self, sender, event_args: TelemetryDataFeedEventArgs):
+    def gTotal_model(self, sender, event_args: TelemetryDataFeedEventArgs):
         input_data = event_args.buffer.get()
 
         data: TransformedTelemetryData = self._output_feed.make_transformed_telemetry_data(samples=10, epoch=input_data.epoch)
@@ -66,4 +66,3 @@ class ModelInstance:
 
         self._output_feed.send(data)
 
-        #print(".", end='')

@@ -5,7 +5,7 @@ Table of Contents
 <!--ts-->
 * [Introduction - MAT.OCS.Streaming library](/README.md)
 * [Python Samples](/README.md)
-* [Model sample](/docs/models.md)
+* [Model sample](/src/Models/models.md)
 
 <!--te-->
 
@@ -112,14 +112,14 @@ telemetry_input.stream_finished += lambda x, y: print('Stream finished')
 
 
 ## Write
-First of all you need to configure the [dependencies](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/update_samples/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L102-L113)
+First of all you need to configure the [dependencies](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L33-L66)
 ```python
 """Setup details"""
 # Populate these constants with the correct values for your project.
-DEPENDENCY_SERVER_URI = 'http://localhost:8180/api/dependencies'
+DEPENDENCY_SERVER_URI = 'http://10.228.4.9:8180/api/dependencies'
 DEPENDENCY_GROUP = 'dev'
-KAFKA_IP = 'localhost:9092'
-TOPIC_NAME = 'test_topic'
+KAFKA_IP = '10.228.4.22:9092'
+TOPIC_NAME = 'samples_test_topic'
 
 frequency = 100
 """Create a dependency client"""
@@ -138,6 +138,7 @@ atlas_configuration_id = atlas_configuration_client.put_and_identify_atlas_confi
 parameter: DataFeedParameter = DataFeedParameter(identifier="vCar:Chassis", aggregates_enum=[Aggregates.avg])
 parameters: List[DataFeedParameter] = [parameter]
 feed = DataFeedDescriptor(frequency=frequency, parameters=parameters)
+
 feed_name = ""
 data_format = DataFormat({feed_name: feed})
 
@@ -145,7 +146,8 @@ data_format_client = DataFormatClient(dependency_client)
 data_format_id = data_format_client.put_and_identify_data_format(data_format)
 
 """Create a Kafka client"""
-client = KafkaStreamClient(kafka_address=KAFKA_IP, consumer_group=DEPENDENCY_GROUP)
+client = KafkaStreamClient(kafka_address=KAFKA_IP,
+                            consumer_group=DEPENDENCY_GROUP)
 ```
 
 The dependency_client is used to handle requests for AtlasConfigurations and DataFormats. You must provide an URI for this service. 
@@ -154,24 +156,29 @@ DataFormat is required when writing to stream, as it is used to define the struc
 
 AtlasConfigurationId is needed only if you want to display your data in Atlas10.
 
-[Open the output topic](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L115) using the preferred client (KafkaStreamClient or MqttStreamClient) and the topicName.
+[Open the output topic](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L68-L69) using the preferred client (KafkaStreamClient or MqttStreamClient) and the topicName.
 ```python
+output: SessionTelemetryDataOutput = None
 with client.open_output_topic(TOPIC_NAME) as output_topic:
 	...
 ```
 
-[Create a SessionTelemetryDataOutput](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L117) and configure session output [properties](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L118-L123).
+[Create a SessionTelemetryDataOutput](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L71-L73) and configure session output [properties](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L75-L84).
 ```python
 try:
-    output = SessionTelemetryDataOutput(output_topic=output_topic, data_format_id=data_format_id, data_format_client=data_format_client)
+    output = SessionTelemetryDataOutput(output_topic=output_topic,
+                                        data_format_id=data_format_id,
+                                        data_format_client=data_format_client)
 
-    output.session_output.add_session_dependency(DependencyTypes.atlas_configuration, atlas_configuration_id)
-    output.session_output.add_session_dependency(DependencyTypes.data_format, data_format_id)
+    output.session_output.add_session_dependency(
+        DependencyTypes.atlas_configuration, atlas_configuration_id)
+    output.session_output.add_session_dependency(
+        DependencyTypes.data_format, data_format_id)
 
     output.session_output.session_state = StreamSessionState.Open
     output.session_output.session_start = datetime.utcnow()
     output.session_output.session_identifier = "test_" + str(datetime.utcnow())
-    output.session_output.session_details = {"test_session": "tamas"}
+    output.session_output.session_details = {"test_session": "sample test session details"}
     output.session_output.send_session()
 
 	....
@@ -192,18 +199,18 @@ You must add data_format_id and atlas_configuration_id to session dependencies t
 
 ### Write Telemetry Data
 
-[Bind the feed to **output.data_output**](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L128-L129) by its name. You can use the default feedname or use a custom one.
+[Bind the feed to **output.data_output**](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L86) by its name. You can use the default feedname or use a custom one.
 ```python
 output_feed: TelemetryDataFeedOutput = output.data_output.bind_default_feed()
 ```
 
-You will need **TelemetryData** to write to the output. In this example we [generate some random TelemetryData](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/33d410b4555bf3fa7d783db18dc444e1728df6b5/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L125) for the purpose of demonstration.
+You will need **TelemetryData** to write to the output. In this example we [generate some random TelemetryData](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L88-L915) for the purpose of demonstration.
 ```python
 data: TelemetryData = output_feed.make_telemetry_data(samples=10, epoch=to_telemetry_time(datetime.utcnow()))
 data = generate_data(data, frequency)
 ```
 
-[send](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L131) the telemetry data.
+[send](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L94) the telemetry data.
 ```python
 output_feed.send(data)
 ```
@@ -214,23 +221,23 @@ You will need **TelemetrySamples** to write to the output. In this example we [g
 telemetry_samples = generate_samples(sample_count=10, session_start=datetime.utcnow(), parameter_id="vCar:Chassis", frequency=frequency)
 ```
 
-[Bind the feed to **output.samples_output**](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/f9f66fa96aaa51a4ec24bf921461918b3771d929/src/MAT.OCS.Streaming.Samples/Samples/Basic/TSamples.cs#L125-L126) by its name. You can use the default feedname or use a custom one.
+[Bind the feed to **output.samples_output**](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TSamplesWrite.py#L98-L99) by its name. You can use the default feedname or use a custom one.
 ```python
 output_feed: TelemetrySamplesFeedOutput = output.samples_output.bind_feed(feed_name="")
-``
+```
 
-[Send Samples](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/f9f66fa96aaa51a4ec24bf921461918b3771d929/src/MAT.OCS.Streaming.Samples/Samples/Basic/TSamples.cs#L128).
+[Send Samples](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TSamplesWrite.py#L101).
 ```python
 output_feed.send(telemetry_samples)
 ```
 
 
-Once you sent all your data, don't forget to [set the session state to closed](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L133) 
+Once you sent all your data, don't forget to [set the session state to closed](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L95) 
 ```python
 output.session_output.session_state = StreamSessionState.Closed
 ```
 
-and [send the session details](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.samples/blob/5b7fcb3e763a36f753f3f320ad2484867fcd66e0/src/MAT.OCS.Streaming.Samples/Samples/Basic/TData.cs#L134) or do it in the finally block as recommended above.
+and [send the session details](https://github.com/McLarenAppliedTechnologies/mat.ocs.streaming.python.samples/blob/develop/src/TDataWrite.py#L100-L102) or do it in the finally block as recommended above.
 ```python
 output.SessionOutput.SendSession(); // send session
 ```
