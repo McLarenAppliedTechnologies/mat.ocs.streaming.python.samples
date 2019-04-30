@@ -5,9 +5,9 @@ from mat.ocs.streaming.IO.DataStatus import DataStatus
 from mat.ocs.streaming.IO.SessionTelemetryDataInput import SessionTelemetryDataInput
 from mat.ocs.streaming.IO.SessionTelemetryDataOutput import SessionTelemetryDataOutput
 from mat.ocs.streaming.IO.TelemetryData.TelemetryDataFeedOutput import TelemetryDataFeedOutput
-from mat.ocs.streaming.IO.dependency_types import DependencyTypes
+from mat.ocs.streaming.IO.DependencyTypes import DependencyTypes
 from mat.ocs.streaming.TelemetryDataFeedEventArgs import TelemetryDataFeedEventArgs
-from mat.ocs.streaming.clients.pipeline.stream_input import StreamInput
+from mat.ocs.streaming.clients.pipeline.StreamInput import StreamInput
 from mat.ocs.streaming.models import Model, TransformedTelemetryData
 
 
@@ -34,7 +34,7 @@ class ModelInstance:
 
         output.session_output.add_session_dependency(DependencyTypes.data_format, self._output_data_format_id)
         output.session_output.add_session_dependency(DependencyTypes.atlas_configuration, self._output_atlas_conf_id)
-        output.session_output.add_session_detail("tamas is testing", "if it is working")
+
         telemetry_input.data_input.bind_default_feed("").data_buffered += self._on_tdata_recieved
         telemetry_input.laps_input.lap_completed += lambda s, e: output.laps_output.send(e.lap)
         telemetry_input.stream_finished += lambda x, y: pprint("Stream " + stream_id + " ended.")

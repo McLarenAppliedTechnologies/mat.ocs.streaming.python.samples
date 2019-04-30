@@ -4,8 +4,8 @@ from mat.ocs.streaming.clients.AtlasConfigurationClient import AtlasConfiguratio
 from mat.ocs.streaming.clients.DataFormatClient import DataFormatClient
 from mat.ocs.streaming.clients.KafkaStreamClient import KafkaStreamClient
 from mat.ocs.streaming import (HttpDependencyClient)
-from mat.ocs.streaming.clients.pipeline.stream_input import StreamInput
-from mat.ocs.streaming.clients.pipeline.stream_pipeline import StreamPipeline
+from mat.ocs.streaming.clients.pipeline.StreamInput import StreamInput
+from mat.ocs.streaming.clients.pipeline.StreamPipeline import StreamPipeline
 from mat.ocs.streaming.models import DataFeedDescriptor, DataFormat, Aggregates, \
     AtlasConfiguration, ApplicationGroup, ParameterGroup, AtlasParameter, Range
 from mat.ocs.streaming.models.dataformat.DataFeedParameter import DataFeedParameter
