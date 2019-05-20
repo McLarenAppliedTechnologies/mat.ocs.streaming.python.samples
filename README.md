@@ -37,9 +37,9 @@ Future versions will model all ATLAS entities, and likely offer better support f
 ## Requirements
 You need to install the following PIP packages from [MAT source](https://artifactory-elb.core.mat.production.matsw.com/artifactory/pypi-local/mat.ocs.streaming/)
 
-* MAT.OCS.Streaming>=1.5.3
+* MAT.OCS.Streaming==1.5.3.7rc0
 
-pip install --index-url https://artifactory-elb.core.mat.production.matsw.com/artifactory/api/pypi/pypi-virtual/simple/ mat.ocs.streaming>=1.5.3.3  
+pip install --index-url https://artifactory-elb.core.mat.production.matsw.com/artifactory/api/pypi/pypi-virtual/simple/ mat.ocs.streaming==1.5.3.7rc0 
 
 # Python Samples
 ## Basic samples
