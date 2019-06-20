@@ -108,6 +108,15 @@ feed_input.buffer.add_trigger(lambda d: any(d.epoch + t > 1555372800000000000 + 
 ```
 This could be handy if we want to process the buffer content only if the input reached a given time on the clock when it was recorded.
 
+##### BackFill Data:
+ * autobind_feeds:
+BackFill Data (backfill_input) input messages are separated by feeds but not stored in a buffer. You can access all of the messages for every feed immediately by subscribing to the autobind_feeds event.
+ * bind_default_feed: The default feed is the feed with name "" (empty string) and feed input of default stream can be accessed by invoking the bind_default_feed method.
+ * bind_feed: You can access messages through feed input only for a specific feed name as well by invoking the bind_feed(feed_name="specific feed name") method.
+ * data_received: It is possible to access the input messages immediately when they are streamed by subscribing to the data_received event. It can be chained with both the bind_default_feed and the bind_feed methods:
+    * bind_default_feed().data_received
+    * bind_feed("test_feed").data_received
+
 ##### Lap:
  * lap_started: Fired when a new lap started.
  * lap_completed: Fired when a lap completed
@@ -125,11 +134,13 @@ There can be different dependencies for the session_output which need to be set 
 Make sure to send the session message before sending any telemetry data. This will also start a session heartbeat, which sends session message in every 10 seconds.
 
 ##### Telemetry Samples:
-Telemetry samples messages can be sent using the initally created SessionTelemetryDataOutput object and its samples_output member, by binding to either the default feed or a specific feed. Once bound to a feed simply invoke the send() method, passing your TelemetrySamples to it.
-
+Telemetry samples messages can be sent using the initally created SessionTelemetryDataOutput object and its samples_output member, by binding to either the default feed or a specific feed. Once bound to a feed simply invoke the send() method, passing your TelemetrySamples object to it.
 
 ##### Telemetry Data:
-Telemetry data messages can be sent using the initally created SessionTelemetryDataOutput object and its data_output member, by binding to either the default feed or a specific feed. Once bound to a feed simply invoke the send() method, passing your TelemetrySamples to it.
+Telemetry data messages can be sent using the initally created SessionTelemetryDataOutput object and its data_output member, by binding to either the default feed or a specific feed. Once bound to a feed simply invoke the send() method, passing your TelemetryData object to it.
+
+##### BackFill Data:
+BackFill data messages can be sent using the initally created SessionTelemetryDataOutput object and its backfill_data_output member, by binding to either the default feed or a specific feed. Once bound to a feed simply invoke the send() method, passing your BackFillData object to it.
 
 Make sure to close the streaming session after sending the data.
 
