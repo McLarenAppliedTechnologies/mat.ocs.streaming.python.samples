@@ -127,7 +127,7 @@ In the callback, each bucket of data is calculated and the result is sent to the
 
 ```python
 def gTotal_model(self, sender, event_args: TelemetryDataFeedEventArgs):
-    input_data = event_args.buffer.get()
+    input_data = event_args.buffer.get_first()
 
     data: TransformedTelemetryData = self._output_feed.make_transformed_telemetry_data(samples=10, epoch=input_data.epoch)
     data.time = input_data.time

@@ -20,7 +20,7 @@ if __name__ == '__main__':
                                      consumer_group=DEPENDENCY_GROUP)
 
     def print_data(sender, event_args: TelemetryDataFeedEventArgs):
-        tdata: TelemetryData = event_args.buffer.get()
+        tdata: TelemetryData = event_args.buffer.get_first()
         print(len(tdata.parameters))
         print('tdata for {0} with length {1} received'.format(
             str(event_args.message_origin.stream_id),
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         print("Streaming session: " + stream_id)
         telemetry_input = SessionTelemetryDataInput(stream_id=stream_id,
                                                     data_format_client=data_format_client)
-        telemetry_input.data_input.bind_default_feed("").data_buffered += print_data
+        telemetry_input.data_input.bind_default_feed().data_buffered += print_data
         return telemetry_input
 
     pipeline: StreamPipeline = kafka_client.stream_topic(TOPIC_NAME).into(stream_input_handler)
