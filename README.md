@@ -120,7 +120,7 @@ BackFill Data (backfill_input) input messages are separated by feeds but not sto
 ##### Lap:
  * lap_started: Fired when a new lap started.
  * lap_completed: Fired when a lap completed
- * new_fastest_lap:
+ * new_fastest_lap
 
 #### Concept of producing streams:
 
