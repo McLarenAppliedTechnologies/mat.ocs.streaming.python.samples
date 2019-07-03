@@ -1,4 +1,4 @@
-# ATLAS Advanced Streaming Samples
+# ![logo](/docs/branding.png) ATLAS Advanced Streaming Samples
 
 Table of Contents
 =================
