@@ -1,4 +1,4 @@
-# ATLAS Advanced Streaming Samples
+# ![logo](/docs/branding.png) ATLAS Advanced Streaming Samples
 
 Table of Contents
 =================
@@ -171,7 +171,7 @@ You need to install the following PIP packages from [MAT source](https://artifac
 
 * MAT.OCS.Streaming==1.5.3.11rc0
 
-pip install --index-url https://artifactory-elb.core.mat.production.matsw.com/artifactory/api/pypi/pypi-virtual/simple/ mat.ocs.streaming==1.5.3.11rc0
+pip install --extra-index-url https://artifactory-elb.core.mat.production.matsw.com/artifactory/api/pypi/pypi-virtual/simple/ mat.ocs.streaming==1.5.3.11rc0
 
 # Python Samples
 ## Basic samples
